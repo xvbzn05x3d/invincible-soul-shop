@@ -17,8 +17,8 @@ export function PriceChart({ data }: { data: { day: string; price: number }[] })
     const y = pad + (height - pad * 2) * (1 - (d.price - min) / span);
     return `${x.toFixed(1)},${y.toFixed(1)}`;
   });
-  const first = data[0];
-  const last = data[data.length - 1];
+  const first = data[0]!;
+  const last = data[data.length - 1]!;
   const diff = last.price - first.price;
 
   const fmt = (day: string) =>
