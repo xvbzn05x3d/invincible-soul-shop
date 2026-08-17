@@ -9,7 +9,7 @@ export function ProductCard({
   onAdd,
 }: {
   product: Product;
-  rating?: { avg: number; count: number };
+  rating?: { avg: number; count: number } | undefined;
   onAdd: () => void;
 }) {
   return (
