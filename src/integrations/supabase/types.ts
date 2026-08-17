@@ -14,7 +14,271 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      order_items: {
+        Row: {
+          id: string
+          order_id: string
+          price: number
+          product_id: string | null
+          quantity: number
+          title: string
+        }
+        Insert: {
+          id?: string
+          order_id: string
+          price: number
+          product_id?: string | null
+          quantity?: number
+          title: string
+        }
+        Update: {
+          id?: string
+          order_id?: string
+          price?: number
+          product_id?: string | null
+          quantity?: number
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          address: string
+          city: string
+          comment: string
+          created_at: string
+          customer_name: string
+          id: string
+          phone: string
+          pickup_point: string
+          region: string
+          status: string
+          total: number
+          user_id: string
+        }
+        Insert: {
+          address?: string
+          city: string
+          comment?: string
+          created_at?: string
+          customer_name: string
+          id?: string
+          phone: string
+          pickup_point?: string
+          region: string
+          status?: string
+          total: number
+          user_id: string
+        }
+        Update: {
+          address?: string
+          city?: string
+          comment?: string
+          created_at?: string
+          customer_name?: string
+          id?: string
+          phone?: string
+          pickup_point?: string
+          region?: string
+          status?: string
+          total?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      pickup_points: {
+        Row: {
+          address: string
+          city: string
+          id: string
+          provider: string
+          region: string
+        }
+        Insert: {
+          address: string
+          city: string
+          id?: string
+          provider: string
+          region: string
+        }
+        Update: {
+          address?: string
+          city?: string
+          id?: string
+          provider?: string
+          region?: string
+        }
+        Relationships: []
+      }
+      price_history: {
+        Row: {
+          day: string
+          id: string
+          price: number
+          product_id: string
+        }
+        Insert: {
+          day?: string
+          id?: string
+          price: number
+          product_id: string
+        }
+        Update: {
+          day?: string
+          id?: string
+          price?: number
+          product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "price_history_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          id: string
+          image_url: string
+          is_new: boolean
+          old_price: number | null
+          popularity: number
+          price: number
+          slug: string
+          title: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string
+          id?: string
+          image_url?: string
+          is_new?: boolean
+          old_price?: number | null
+          popularity?: number
+          price: number
+          slug: string
+          title: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          image_url?: string
+          is_new?: boolean
+          old_price?: number | null
+          popularity?: number
+          price?: number
+          slug?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      profile_contacts: {
+        Row: {
+          created_at: string
+          phone: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          phone: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          phone?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          id: string
+          username: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          id: string
+          username?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          username?: string
+        }
+        Relationships: []
+      }
+      reviews: {
+        Row: {
+          comment: string
+          cons: string
+          created_at: string
+          id: string
+          photos: string[]
+          product_id: string
+          pros: string
+          rating: number
+          user_id: string
+        }
+        Insert: {
+          comment?: string
+          cons?: string
+          created_at?: string
+          id?: string
+          photos?: string[]
+          product_id: string
+          pros?: string
+          rating: number
+          user_id: string
+        }
+        Update: {
+          comment?: string
+          cons?: string
+          created_at?: string
+          id?: string
+          photos?: string[]
+          product_id?: string
+          pros?: string
+          rating?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
