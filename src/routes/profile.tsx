@@ -90,7 +90,11 @@ function ProfilePage() {
         .createSignedUrl(path, 60 * 60 * 24 * 365 * 5);
       const { error } = await supabase
         .from("profiles")
-        .upsert({ id: user.id, username: username || "Покупатель", avatar_url: signed?.signedUrl });
+        .upsert({
+          id: user.id,
+          username: username || "Покупатель",
+          avatar_url: signed?.signedUrl ?? null,
+        });
       if (error) throw error;
       await refreshProfile();
       toast.success("Аватар обновлён");
