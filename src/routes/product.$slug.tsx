@@ -19,18 +19,24 @@ import {
 } from "@/lib/shop";
 
 export const Route = createFileRoute("/product/$slug")({
-  head: () => ({
-    meta: [
-      { title: "Товар — INVINCIBLE SOUL" },
-      {
-        name: "description",
-        content:
-          "Карточка товара INVINCIBLE SOUL: цена, динамика цены за месяц, отзывы покупателей с фото и оценками.",
-      },
-      { property: "og:title", content: "Товар — INVINCIBLE SOUL" },
-      { property: "og:description", content: "Цена, динамика цены и отзывы покупателей." },
-    ],
-  }),
+  head: ({ params }) => {
+    const name = params.slug
+      .split("-")
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(" ");
+    const title = `${name} — купить в INVINCIBLE SOUL`;
+    const description = `${name}: цена, динамика цены за последний месяц и отзывы покупателей с фото и оценками в магазине INVINCIBLE SOUL.`;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "product" },
+        { name: "twitter:card", content: "summary_large_image" },
+      ],
+    };
+  },
   component: ProductPage,
   errorComponent: ({ error }) => (
     <div className="p-10 text-center text-sm text-muted-foreground">{error.message}</div>
