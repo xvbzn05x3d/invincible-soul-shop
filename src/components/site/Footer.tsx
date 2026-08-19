@@ -1,8 +1,9 @@
 import { Mail, Phone } from "lucide-react";
 
 import logo from "@/assets/logo.png.asset.json";
+import ozonLogo from "@/assets/ozon-logo.png.asset.json";
 import { SHOP } from "@/lib/shop";
-import { OzonIcon, TelegramIcon, VkIcon } from "./Icons";
+import { TelegramIcon, VkIcon } from "./Icons";
 
 export function ContactLinks({ compact = false }: { compact?: boolean }) {
   const base =
@@ -26,8 +27,8 @@ export function ContactLinks({ compact = false }: { compact?: boolean }) {
         {SHOP.phoneLabel}
       </a>
       <a href={SHOP.ozon} target="_blank" rel="noreferrer" className={base}>
-        <OzonIcon />
-        Наш Ozon-магазин
+        <img src={ozonLogo.url} alt="Ozon" className="h-5 w-5 object-contain rounded-sm" />
+        Мы на OZON
       </a>
     </div>
   );
