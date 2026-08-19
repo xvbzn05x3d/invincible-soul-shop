@@ -26,8 +26,8 @@ export function ContactLinks({ compact = false }: { compact?: boolean }) {
         {SHOP.phoneLabel}
       </a>
       <a href={SHOP.ozon} target="_blank" rel="noreferrer" className={base}>
-        <OzonIcon />
-        Наш Ozon-магазин
+        <img src={ozonLogo.url} alt="Ozon" className="h-5 w-5 object-contain rounded-sm" />
+        Мы на OZON
       </a>
     </div>
   );
