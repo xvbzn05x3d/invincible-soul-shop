@@ -21,3 +21,16 @@ export function VkIcon({ className = "h-5 w-5" }: { className?: string }) {
     </svg>
   );
 }
+
+export function OzonIcon({ className = "h-5 w-5" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 100 100" className={className} aria-hidden="true">
+      <circle cx="50" cy="50" r="50" fill="#005BFF" />
+      <path
+        d="M20 50 C 20 30, 80 30, 80 50 C 80 70, 20 70, 20 50 Z"
+        fill="#F91155"
+      />
+      <circle cx="50" cy="50" r="15" fill="#fff" />
+    </svg>
+  );
+}
