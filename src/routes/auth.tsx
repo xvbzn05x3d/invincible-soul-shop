@@ -85,7 +85,7 @@ function AuthPage() {
           <span className="font-bold tracking-tight">
             INVINCIBLE <span className="text-primary">SOUL</span>
           </span>
-        </Link>
+        </div>
 
         <h1 className="mt-6 text-2xl font-extrabold">
           {mode === "register" ? "Регистрация по телефону" : "Вход в аккаунт"}
