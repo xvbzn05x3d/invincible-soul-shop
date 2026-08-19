@@ -1,7 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { UserPlus, Plus, Shield, User } from "lucide-react";
 
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
@@ -31,8 +32,9 @@ function ProfilePage() {
   const [username, setUsername] = useState("");
   const [phone, setPhone] = useState("");
   const [busy, setBusy] = useState(false);
-  const [editorEmail, setEditorEmail] = useState("");
-  const [editorRole, setEditorRole] = useState<"editor" | "user">("editor");
+  const [isAddEditorOpen, setIsAddEditorOpen] = useState(false);
+  const [editorPhone, setEditorPhone] = useState("");
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (!loading && !user) void navigate({ to: "/auth" });
@@ -63,6 +65,101 @@ function ProfilePage() {
       if (error) throw error;
       return data ?? [];
     },
+  });
+
+  const { data: editors = [] } = useQuery({
+    queryKey: ["user_roles"],
+    enabled: role === "owner",
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select(`
+          user_id,
+          role,
+          profiles:user_id (
+            username,
+            avatar_url
+          )
+        `)
+        .eq("role", "editor");
+      if (error) throw error;
+      
+      const userIds = (data ?? []).map(d => d.user_id);
+      let phoneMap: Record<string, string> = {};
+      
+      if (userIds.length > 0) {
+        const { data: contacts } = await supabase
+          .from("profile_contacts")
+          .select("user_id, phone")
+          .in("user_id", userIds);
+        phoneMap = Object.fromEntries((contacts ?? []).map(c => [c.user_id, c.phone]));
+      }
+
+      return (data ?? []).map((d: any) => ({
+        id: d.user_id,
+        username: d.profiles?.username || "Пользователь",
+        avatar_url: d.profiles?.avatar_url,
+        phone: phoneMap[d.user_id] || "Скрыт",
+        role: d.role
+      }));
+    },
+  });
+
+  const addEditorMutation = useMutation({
+    mutationFn: async (phoneNum: string) => {
+      // Find user by phone in profile_contacts
+      const { data: contact, error: searchErr } = await supabase
+        .from("profile_contacts")
+        .select("user_id")
+        .eq("phone", phoneNum)
+        .maybeSingle();
+      
+      if (searchErr) throw searchErr;
+      if (!contact) throw new Error("Пользователь с таким номером не найден");
+
+      // Check if already has a role
+      const { data: existingRole } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", contact.user_id)
+        .eq("role", "editor")
+        .maybeSingle();
+      
+      if (existingRole) throw new Error("Этот пользователь уже является редактором");
+
+      const { error: roleErr } = await supabase
+        .from("user_roles")
+        .insert({ user_id: contact.user_id, role: "editor" });
+      
+      if (roleErr) throw roleErr;
+    },
+    onSuccess: () => {
+      toast.success("Редактор добавлен");
+      setEditorPhone("");
+      setIsAddEditorOpen(false);
+      void queryClient.invalidateQueries({ queryKey: ["user_roles"] });
+    },
+    onError: (err) => {
+      toast.error(err instanceof Error ? err.message : "Ошибка при добавлении");
+    }
+  });
+
+  const removeEditorMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      const { error } = await supabase
+        .from("user_roles")
+        .delete()
+        .eq("user_id", userId)
+        .eq("role", "editor");
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Редактор удален");
+      void queryClient.invalidateQueries({ queryKey: ["user_roles"] });
+    },
+    onError: () => {
+      toast.error("Ошибка при удалении");
+    }
   });
 
   if (!user) return <div className="p-10 text-center text-muted-foreground">Загрузка…</div>;
@@ -102,30 +199,6 @@ function ProfilePage() {
       toast.success("Аватар обновлён");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Не удалось загрузить фото");
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const assignRole = async () => {
-    if (!editorEmail) return;
-    setBusy(true);
-    try {
-      // Note: We need to find the user ID by email. 
-      // In Supabase Auth, we can't easily search public users by email without a table.
-      // But we can check our profiles/contacts if we had a mapping.
-      // For now, we'll use a RPC or manual ID entry if email fails, 
-      // but let's assume we can try to find them in profiles if we stored email there.
-      // Since we don't store email in public.profiles, we might need a workaround.
-      
-      // Let's assume for this demo we use the synthetic email format p+phone@invincible-soul.app
-      const { data: users, error: searchErr } = await supabase.auth.admin.listUsers(); // Requires service role, so this won't work client-side
-      
-      // Alternative: Ask owner to provide user ID or just implement a search in a future turn.
-      // For now, let's implement the UI and a simple upsert if we had the ID.
-      toast.error("Для назначения ролей по Email требуется серверная функция. Используйте ID пользователя (в разработке).");
-    } catch (err) {
-      toast.error("Ошибка");
     } finally {
       setBusy(false);
     }
@@ -210,33 +283,80 @@ function ProfilePage() {
 
         {role === "owner" && (
           <section className="mt-10 animate-in fade-in duration-700 delay-200">
-            <h2 className="text-2xl font-extrabold tracking-tight">Управление редакторами</h2>
+            <h2 className="text-2xl font-extrabold tracking-tight">Список редакторов</h2>
             <div className="mt-4 rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)]">
-              <p className="text-sm text-muted-foreground mb-4">
-                Назначайте права редактора другим пользователям сайта.
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <input
-                  placeholder="Email пользователя"
-                  className="h-11 flex-1 min-w-[240px] rounded-xl border border-input bg-card px-4 text-sm outline-none focus:border-primary"
-                  value={editorEmail}
-                  onChange={(e) => setEditorEmail(e.target.value)}
-                />
-                <select 
-                  className="h-11 rounded-xl border border-input bg-card px-4 text-sm outline-none focus:border-primary"
-                  value={editorRole}
-                  onChange={(e) => setEditorRole(e.target.value as any)}
-                >
-                  <option value="editor">Редактор</option>
-                  <option value="user">Пользователь</option>
-                </select>
-                <button
-                  onClick={assignRole}
-                  disabled={busy}
-                  className="h-11 rounded-xl bg-primary px-6 font-semibold text-primary-foreground transition-opacity hover:opacity-90"
-                >
-                  Применить
-                </button>
+              <div className="space-y-4">
+                {editors.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-4">Редакторов пока нет</p>
+                ) : (
+                  editors.map((ed: any) => (
+                    <div key={ed.id} className="flex items-center justify-between gap-4 p-3 rounded-xl border border-border bg-background/50">
+                      <div className="flex items-center gap-3">
+                        {ed.avatar_url ? (
+                          <img src={ed.avatar_url} alt="" className="h-10 w-10 rounded-full object-cover" />
+                        ) : (
+                          <div className="h-10 w-10 rounded-full bg-accent flex items-center justify-center text-xs font-bold">
+                            {ed.username.slice(0, 1).toUpperCase()}
+                          </div>
+                        )}
+                        <div>
+                          <p className="font-semibold text-sm">{ed.username}</p>
+                          <p className="text-xs text-muted-foreground">{ed.phone}</p>
+                        </div>
+                      </div>
+                      <button 
+                        onClick={() => removeEditorMutation.mutate(ed.id)}
+                        className="text-xs font-medium text-destructive hover:underline"
+                      >
+                        Удалить
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <div className="mt-6 border-t border-border pt-6">
+                {!isAddEditorOpen ? (
+                  <button
+                    onClick={() => setIsAddEditorOpen(true)}
+                    className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border-2 border-dashed border-border hover:border-primary hover:text-primary transition-all text-sm font-semibold"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Добавить редактора
+                  </button>
+                ) : (
+                  <div className="space-y-4 animate-in slide-in-from-top-2 duration-300">
+                    <div className="flex flex-col gap-2">
+                      <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                        Номер телефона редактора
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          placeholder="+79001234567"
+                          className="h-11 flex-1 rounded-xl border border-input bg-card px-4 text-sm outline-none focus:border-primary"
+                          value={editorPhone}
+                          onChange={(e) => setEditorPhone(e.target.value)}
+                        />
+                        <button
+                          onClick={() => addEditorMutation.mutate(editorPhone)}
+                          disabled={addEditorMutation.isPending || !editorPhone}
+                          className="h-11 rounded-xl bg-primary px-6 font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+                        >
+                          Добавить
+                        </button>
+                        <button
+                          onClick={() => setIsAddEditorOpen(false)}
+                          className="h-11 rounded-xl border border-border px-4 font-semibold hover:bg-accent"
+                        >
+                          Отмена
+                        </button>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground">
+                        Пользователь должен быть уже зарегистрирован на сайте с этим номером.
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </section>
