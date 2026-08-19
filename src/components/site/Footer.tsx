@@ -1,7 +1,7 @@
 import { Mail, Phone } from "lucide-react";
 
 import logo from "@/assets/logo.png.asset.json";
-import ozonLogo from "@/assets/ozon-logo.png.asset.json";
+import ozonLogo from "@/assets/ozon-logo-new.png.asset.json";
 import { SHOP } from "@/lib/shop";
 import { TelegramIcon, VkIcon } from "./Icons";
 
