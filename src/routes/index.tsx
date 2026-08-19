@@ -83,7 +83,7 @@ function Index() {
 
       <section className="border-b border-border bg-[image:var(--gradient-soft)]">
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 md:grid-cols-2 md:py-24">
-          <div>
+          <div className="animate-in fade-in slide-in-from-left duration-700">
             <div className="flex items-center gap-3">
               <img src={logo.url} alt="Логотип INVINCIBLE SOUL" className="h-14 w-14 object-contain" />
               <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary">
@@ -98,22 +98,21 @@ function Index() {
               любого возраста — от первой тренировки до профессионального ринга.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                to="/"
-                hash="catalog"
-                className="inline-flex h-12 items-center rounded-xl bg-primary px-7 font-semibold text-primary-foreground shadow-[var(--shadow-hover)] transition-opacity hover:opacity-90"
+              <a
+                href="#catalog"
+                className="inline-flex h-12 items-center rounded-xl bg-primary px-7 font-semibold text-primary-foreground shadow-[var(--shadow-hover)] transition-all hover:opacity-90 active:scale-95"
               >
                 Заказать товар
-              </Link>
+              </a>
               <Link
                 to="/cart"
-                className="inline-flex h-12 items-center rounded-xl border border-border bg-card px-7 font-semibold transition-colors hover:border-primary hover:text-primary"
+                className="inline-flex h-12 items-center rounded-xl border border-border bg-card px-7 font-semibold transition-all hover:border-primary hover:text-primary active:scale-95"
               >
                 Перейти в корзину
               </Link>
             </div>
           </div>
-          <div className="relative">
+          <div className="relative animate-in fade-in slide-in-from-right duration-700">
             <img
               src={heroImage}
               alt="Боксёрские перчатки INVINCIBLE SOUL"
@@ -125,7 +124,7 @@ function Index() {
         </div>
       </section>
 
-      <section id="advantages" className="mx-auto max-w-6xl px-4 py-14">
+      <section id="advantages" className="mx-auto max-w-6xl px-4 py-14 animate-in fade-in slide-in-from-bottom duration-700 delay-200">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[
             { icon: Wallet, title: "Доступные цены", text: "Прямые поставки без наценки посредников." },
@@ -145,7 +144,7 @@ function Index() {
         </div>
       </section>
 
-      <section id="catalog" className="mx-auto max-w-6xl px-4 pb-16">
+      <section id="catalog" className="mx-auto max-w-6xl px-4 pb-16 animate-in fade-in slide-in-from-bottom duration-700 delay-300">
         <h2 className="text-2xl font-extrabold tracking-tight md:text-3xl">Каталог товаров</h2>
 
         <div className="mt-5 flex flex-wrap gap-2">
@@ -198,9 +197,9 @@ function Index() {
         )}
       </section>
 
-      <section className="border-y border-border bg-secondary/60">
+      <section className="border-y border-border bg-secondary/60 animate-in fade-in duration-700">
         <div className="mx-auto max-w-6xl px-4 py-14">
-          <h2 className="text-2xl font-extrabold tracking-tight">Связаться с магазином</h2>
+          <h2 className="text-2xl font-extrabold tracking-tight">Обратная связь</h2>
           <p className="mt-2 max-w-xl text-muted-foreground">
             Задайте вопрос о размере, наличии или доставке — мы на связи в Telegram, ВКонтакте, по
             почте и телефону.
