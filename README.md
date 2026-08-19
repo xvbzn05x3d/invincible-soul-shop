@@ -1,14 +1,39 @@
-# Welcome to your Lovable project
+# Invincible Soul: Sportswear Redefined
+
+Сделай лендинг для онлайн-магазина по продаже спортивной одежды «INVINCIBLE SOUL» 
+
+Целевая аудитория: покупатели разных возрастов, мужчины и женщины.
+Главное преимущество: Доступные цены и гарантированное качество.
+Призыв к действию: заказать товар.
+Стиль: современный, минималистичный, белый цвет и синие оттенки.
+
+Добавь логотип магазина (на втором скриншоте) прямо перед названием
+Добавь возможность обратного отклика для покупателей в виде ссылок на интернет ресурсы магазина с добавлением логотипа интернет-ресурса перед названием самого интернет-ресурса:
+Telegram канал: https://t.me/INVINCIBLE_Sport
+Сообщество во ВКонтакте:  https://vk.ru/im/channels/-235909700
+Адрес электронной почты: pv-boks@yandex.ru
+Номер телефона: +79104913900
+Обязательно добавь возможность регистрации пользователя на сайте по номеру телефона с возможностью установить имя пользователя и аватарку в профиле. Номер телефона должен быть скрыт для остальных посетителей сайта.
+Обязательно добавь корзину, куда посетители сайта могут добавить товар и впоследствии заказать товары, добавленные в корзину.
+Обязательно добавь возможность оформления онлайн заказа с переадресацией заявки на электронную почту магазина или в телеграм. Цены и карточки товаров нужно взять с Ozon магазина по ссылке: https://www.ozon.ru/seller/invincible-soul/?deny_category_prediction=true&from_global=true
+Обязательно добавь возможность выбора категории товаров как по ссылке: Популярные, Новинки, Дешевле, Дороже.
+Обязательно добавь возможность оставить отзыв в карточке товара с публикацией этого отзыва в отдельном блоке в карточке товаров, в отзыв нужно добавить возможность для написания преимуществ, недостатков, комментария пользователя, фотографий и оценок в виде звёзд от 1 до 5.
+Обязательно добавь в карточке каждого товара на сайте динамику цен за последний месяц и сделай так, чтобы она обновлялась регулярно на основе изменений цен на самом сайте.
+Добавь возможность выбора региона доставки и точного адреса в соответствии со списком пунктов выдачи заказов СДЕК и Ozon.
+В просмотре товаров под карточкой добавь среднюю оценку и количество отзывов.
+В качестве примера возьми мой скриншот
 
 This project was built with [Lovable](https://lovable.dev).
 
+**Live app**: https://invincible-soul-shop.lovable.app
+
 ## Build with Lovable
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/699996f9-80a6-474b-9fed-a31f28189ff1).
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
@@ -20,10 +45,3 @@ cd <repository-name>
 npm i
 npm run dev
 ```
-
-## Built with
-
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
