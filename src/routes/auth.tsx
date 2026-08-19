@@ -57,9 +57,30 @@ function AuthPage() {
     "h-11 w-full rounded-xl border border-input bg-card px-4 text-sm outline-none transition-colors focus:border-primary";
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[image:var(--gradient-soft)] px-4 py-12">
+    <div className="relative flex min-h-screen items-center justify-center bg-[image:var(--gradient-soft)] px-4 py-12">
+      <Link
+        to="/"
+        className="absolute top-8 left-8 flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="h-4 w-4"
+        >
+          <path d="m15 18-6-6 6-6" />
+        </svg>
+        Вернуться в магазин
+      </Link>
+
       <div className="w-full max-w-md rounded-3xl border border-border bg-card p-8 shadow-[var(--shadow-card)]">
-        <Link to="/" className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
           <img src={logo.url} alt="Логотип INVINCIBLE SOUL" className="h-10 w-10 object-contain" />
           <span className="font-bold tracking-tight">
             INVINCIBLE <span className="text-primary">SOUL</span>
