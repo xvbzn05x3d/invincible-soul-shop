@@ -44,11 +44,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setProfile((data as Profile | null) ?? null);
 
     const { data: roleData } = await supabase
-      .from("user_roles" as any)
+      .from("user_roles")
       .select("role")
       .eq("user_id", userId)
       .maybeSingle();
-    setRole((roleData?.role as any) ?? "user");
+    setRole(roleData?.role ?? "user");
   };
 
   useEffect(() => {
