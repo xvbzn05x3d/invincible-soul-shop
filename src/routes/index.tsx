@@ -248,18 +248,6 @@ function Index() {
         )}
       </section>
 
-      <section className="border-y border-border bg-secondary/60 animate-in fade-in duration-700">
-        <div className="mx-auto max-w-6xl px-4 py-14">
-          <h2 className="text-2xl font-extrabold tracking-tight">Обратная связь</h2>
-          <p className="mt-2 max-w-xl text-muted-foreground">
-            Задайте вопрос о размере, наличии или доставке — мы на связи в Telegram, ВКонтакте, по
-            почте и телефону.
-          </p>
-          <div className="mt-6">
-            <ContactLinks />
-          </div>
-        </div>
-      </section>
 
       <Footer />
     </div>
