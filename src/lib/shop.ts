@@ -145,4 +145,5 @@ export const SHOP = {
   email: "pv-boks@yandex.ru",
   phone: "+79104913900",
   phoneLabel: "+7 910 491-39-00",
+  ozon: "https://www.ozon.ru/brand/invincible-100925223/?sorting=new",
 };

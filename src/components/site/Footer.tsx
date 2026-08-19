@@ -2,7 +2,7 @@ import { Mail, Phone } from "lucide-react";
 
 import logo from "@/assets/logo.png.asset.json";
 import { SHOP } from "@/lib/shop";
-import { TelegramIcon, VkIcon } from "./Icons";
+import { OzonIcon, TelegramIcon, VkIcon } from "./Icons";
 
 export function ContactLinks({ compact = false }: { compact?: boolean }) {
   const base =
@@ -24,6 +24,10 @@ export function ContactLinks({ compact = false }: { compact?: boolean }) {
       <a href={`tel:${SHOP.phone}`} className={base}>
         <Phone className="h-5 w-5 text-primary" />
         {SHOP.phoneLabel}
+      </a>
+      <a href={SHOP.ozon} target="_blank" rel="noreferrer" className={base}>
+        <OzonIcon />
+        Наш Ozon-магазин
       </a>
     </div>
   );
