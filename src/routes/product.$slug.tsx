@@ -18,6 +18,7 @@ import {
   fetchReviews,
   imageForSlug,
   money,
+  type Product,
 } from "@/lib/shop";
 
 export const Route = createFileRoute("/product/$slug")({
