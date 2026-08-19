@@ -1,5 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
+import { BadgeCheck, ShieldCheck, Truck, Wallet, Plus, Edit, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+
+import logo from "@/assets/logo.png.asset.json";
+import heroImage from "@/assets/p-gloves.jpg";
+import { Header } from "@/components/site/Header";
+import { Footer, ContactLinks } from "@/components/site/Footer";
+import { ProductCard } from "@/components/site/ProductCard";
+import { useCart } from "@/lib/cart";
+import { useAuth } from "@/lib/auth";
+import { fetchProducts, fetchRatings, type Product } from "@/lib/shop";
+import { supabase } from "@/integrations/supabase/client";
+import { ProductEditor } from "@/components/site/ProductEditor";
 import { useMemo, useState } from "react";
 import { BadgeCheck, ShieldCheck, Truck, Wallet } from "lucide-react";
 import { toast } from "sonner";
@@ -43,7 +57,10 @@ type SortId = (typeof SORTS)[number]["id"];
 function Index() {
   const [sort, setSort] = useState<SortId>("popular");
   const [category, setCategory] = useState<string>("Все");
+  const [editingProduct, setEditingProduct] = useState<Partial<Product> | null>(null);
   const cart = useCart();
+  const { role } = useAuth();
+  const queryClient = useQueryClient();
 
   const { data: products = [], isLoading } = useQuery({
     queryKey: ["products"],
@@ -145,7 +162,18 @@ function Index() {
       </section>
 
       <section id="catalog" className="mx-auto max-w-6xl px-4 pb-16 animate-in fade-in slide-in-from-bottom duration-700 delay-300">
-        <h2 className="text-2xl font-extrabold tracking-tight md:text-3xl">Каталог товаров</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-extrabold tracking-tight md:text-3xl">Каталог товаров</h2>
+          {(role === "owner" || role === "editor") && (
+            <button
+              onClick={() => setEditingProduct({})}
+              className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:opacity-90"
+            >
+              <Plus className="h-4 w-4" />
+              Добавить товар
+            </button>
+          )}
+        </div>
 
         <div className="mt-5 flex flex-wrap gap-2">
           {categories.map((c) => (
@@ -186,14 +214,48 @@ function Index() {
         ) : (
           <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {visible.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                rating={ratings[product.id]}
-                onAdd={() => addToCart(product)}
-              />
+              <div key={product.id} className="group relative">
+                <ProductCard
+                  product={product}
+                  rating={ratings[product.id]}
+                  onAdd={() => addToCart(product)}
+                />
+                {(role === "owner" || role === "editor") && (
+                  <div className="absolute right-2 top-2 z-10 flex gap-2 opacity-0 transition-opacity group-hover:opacity-100">
+                    <button
+                      onClick={() => setEditingProduct(product)}
+                      className="flex h-8 w-8 items-center justify-center rounded-lg bg-card text-foreground shadow-sm hover:text-primary"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={async () => {
+                        if (confirm("Удалить этот товар?")) {
+                          const { error } = await supabase.from("products").delete().eq("id", product.id);
+                          if (error) toast.error(error.message);
+                          else {
+                            toast.success("Товар удален");
+                            queryClient.invalidateQueries({ queryKey: ["products"] });
+                          }
+                        }
+                      }}
+                      className="flex h-8 w-8 items-center justify-center rounded-lg bg-card text-foreground shadow-sm hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                )}
+              </div>
             ))}
           </div>
+        )}
+
+        {editingProduct && (
+          <ProductEditor
+            product={editingProduct}
+            onClose={() => setEditingProduct(null)}
+            onSuccess={() => queryClient.invalidateQueries({ queryKey: ["products"] })}
+          />
         )}
       </section>
 

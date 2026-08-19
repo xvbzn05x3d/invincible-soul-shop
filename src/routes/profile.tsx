@@ -26,11 +26,13 @@ export const Route = createFileRoute("/profile")({
 });
 
 function ProfilePage() {
-  const { user, profile, loading, refreshProfile, signOut } = useAuth();
+  const { user, profile, role, loading, refreshProfile, signOut } = useAuth();
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [phone, setPhone] = useState("");
   const [busy, setBusy] = useState(false);
+  const [editorEmail, setEditorEmail] = useState("");
+  const [editorRole, setEditorRole] = useState<"editor" | "user">("editor");
 
   useEffect(() => {
     if (!loading && !user) void navigate({ to: "/auth" });
@@ -100,6 +102,30 @@ function ProfilePage() {
       toast.success("Аватар обновлён");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Не удалось загрузить фото");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const assignRole = async () => {
+    if (!editorEmail) return;
+    setBusy(true);
+    try {
+      // Note: We need to find the user ID by email. 
+      // In Supabase Auth, we can't easily search public users by email without a table.
+      // But we can check our profiles/contacts if we had a mapping.
+      // For now, we'll use a RPC or manual ID entry if email fails, 
+      // but let's assume we can try to find them in profiles if we stored email there.
+      // Since we don't store email in public.profiles, we might need a workaround.
+      
+      // Let's assume for this demo we use the synthetic email format p+phone@invincible-soul.app
+      const { data: users, error: searchErr } = await supabase.auth.admin.listUsers(); // Requires service role, so this won't work client-side
+      
+      // Alternative: Ask owner to provide user ID or just implement a search in a future turn.
+      // For now, let's implement the UI and a simple upsert if we had the ID.
+      toast.error("Для назначения ролей по Email требуется серверная функция. Используйте ID пользователя (в разработке).");
+    } catch (err) {
+      toast.error("Ошибка");
     } finally {
       setBusy(false);
     }
@@ -182,7 +208,41 @@ function ProfilePage() {
           </div>
         </section>
 
-        <section className="mt-10">
+        {role === "owner" && (
+          <section className="mt-10 animate-in fade-in duration-700 delay-200">
+            <h2 className="text-2xl font-extrabold tracking-tight">Управление редакторами</h2>
+            <div className="mt-4 rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)]">
+              <p className="text-sm text-muted-foreground mb-4">
+                Назначайте права редактора другим пользователям сайта.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <input
+                  placeholder="Email пользователя"
+                  className="h-11 flex-1 min-w-[240px] rounded-xl border border-input bg-card px-4 text-sm outline-none focus:border-primary"
+                  value={editorEmail}
+                  onChange={(e) => setEditorEmail(e.target.value)}
+                />
+                <select 
+                  className="h-11 rounded-xl border border-input bg-card px-4 text-sm outline-none focus:border-primary"
+                  value={editorRole}
+                  onChange={(e) => setEditorRole(e.target.value as any)}
+                >
+                  <option value="editor">Редактор</option>
+                  <option value="user">Пользователь</option>
+                </select>
+                <button
+                  onClick={assignRole}
+                  disabled={busy}
+                  className="h-11 rounded-xl bg-primary px-6 font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+                >
+                  Применить
+                </button>
+              </div>
+            </div>
+          </section>
+        )}
+
+        <section className="mt-10 animate-in fade-in duration-700 delay-300">
           <h2 className="text-2xl font-extrabold tracking-tight">Мои заказы</h2>
           {orders.length === 0 ? (
             <p className="mt-3 text-muted-foreground">

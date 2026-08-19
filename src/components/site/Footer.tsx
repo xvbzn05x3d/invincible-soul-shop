@@ -31,7 +31,7 @@ export function ContactLinks({ compact = false }: { compact?: boolean }) {
 
 export function Footer() {
   return (
-    <footer id="contacts" className="border-t border-border bg-secondary/60">
+    <footer id="contacts" className="border-t border-border bg-secondary/60 animate-in fade-in duration-700">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 md:grid-cols-2">
         <div>
           <div className="flex items-center gap-3">
