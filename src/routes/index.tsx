@@ -14,17 +14,6 @@ import { useAuth } from "@/lib/auth";
 import { fetchProducts, fetchRatings, type Product } from "@/lib/shop";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductEditor } from "@/components/site/ProductEditor";
-import { useMemo, useState } from "react";
-import { BadgeCheck, ShieldCheck, Truck, Wallet } from "lucide-react";
-import { toast } from "sonner";
-
-import logo from "@/assets/logo.png.asset.json";
-import heroImage from "@/assets/p-gloves.jpg";
-import { Header } from "@/components/site/Header";
-import { Footer, ContactLinks } from "@/components/site/Footer";
-import { ProductCard } from "@/components/site/ProductCard";
-import { useCart } from "@/lib/cart";
-import { fetchProducts, fetchRatings, type Product } from "@/lib/shop";
 
 export const Route = createFileRoute("/")({
   head: () => ({
