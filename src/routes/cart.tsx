@@ -236,7 +236,7 @@ function CartPage() {
                 }}
               >
                 <option value="">Регион доставки</option>
-                {regions.map((r) => (
+                {regions.sort().map((r) => (
                   <option key={r} value={r}>
                     {r}
                   </option>

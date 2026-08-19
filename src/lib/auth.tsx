@@ -9,6 +9,7 @@ type AuthContextValue = {
   session: Session | null;
   user: User | null;
   profile: Profile | null;
+  role: "owner" | "editor" | "user" | null;
   loading: boolean;
   refreshProfile: () => Promise<void>;
   signUpWithPhone: (phone: string, password: string, username: string) => Promise<void>;
@@ -31,6 +32,7 @@ function phoneToEmail(phone: string) {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [role, setRole] = useState<"owner" | "editor" | "user" | null>(null);
   const [loading, setLoading] = useState(true);
 
   const loadProfile = async (userId: string) => {
@@ -40,6 +42,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .eq("id", userId)
       .maybeSingle();
     setProfile((data as Profile | null) ?? null);
+
+    const { data: roleData } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId)
+      .maybeSingle();
+    setRole((roleData?.role as any) ?? "user");
   };
 
   useEffect(() => {
@@ -49,6 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setTimeout(() => void loadProfile(nextSession.user.id), 0);
       } else {
         setProfile(null);
+        setRole(null);
       }
     });
 
@@ -65,6 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     session,
     user: session?.user ?? null,
     profile,
+    role,
     loading,
     refreshProfile: async () => {
       if (session?.user) await loadProfile(session.user.id);
@@ -95,6 +106,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signOut: async () => {
       await supabase.auth.signOut();
       setProfile(null);
+      setRole(null);
     },
   };
 
