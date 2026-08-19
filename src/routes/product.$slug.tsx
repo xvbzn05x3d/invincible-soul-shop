@@ -1,7 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Edit, Trash2 } from "lucide-react";
+import { ProductEditor } from "@/components/site/ProductEditor";
 
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
@@ -16,6 +18,7 @@ import {
   fetchReviews,
   imageForSlug,
   money,
+  type Product,
 } from "@/lib/shop";
 
 export const Route = createFileRoute("/product/$slug")({
@@ -47,7 +50,7 @@ export const Route = createFileRoute("/product/$slug")({
 function ProductPage() {
   const { slug } = Route.useParams();
   const cart = useCart();
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const queryClient = useQueryClient();
 
   const { data: product, isLoading } = useQuery({
@@ -71,6 +74,8 @@ function ProductPage() {
   const [comment, setComment] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [busy, setBusy] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Partial<Product> | null>(null);
+  const navigate = useNavigate();
 
   if (isLoading) return <div className="p-10 text-center text-muted-foreground">Загрузка…</div>;
   if (!product) return <div className="p-10 text-center">Товар не найден</div>;
@@ -140,7 +145,34 @@ function ProductPage() {
             <span className="text-xs uppercase tracking-wide text-muted-foreground">
               {product.category}
             </span>
-            <h1 className="mt-2 text-3xl font-extrabold tracking-tight">{product.title}</h1>
+            <div className="flex items-center justify-between mt-2">
+              <h1 className="text-3xl font-extrabold tracking-tight">{product.title}</h1>
+              {(role === "owner" || role === "editor") && (
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setEditingProduct(product)}
+                    className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-foreground transition-colors hover:border-primary hover:text-primary"
+                  >
+                    <Edit className="h-5 w-5" />
+                  </button>
+                  <button
+                    onClick={async () => {
+                      if (confirm("Удалить этот товар?")) {
+                        const { error } = await supabase.from("products").delete().eq("id", product.id);
+                        if (error) toast.error(error.message);
+                        else {
+                          toast.success("Товар удален");
+                          await navigate({ to: "/", hash: "catalog" });
+                        }
+                      }
+                    }}
+                    className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-foreground transition-colors hover:border-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="h-5 w-5" />
+                  </button>
+                </div>
+              )}
+            </div>
             <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
               <Stars value={avg} />
               <span>
@@ -301,6 +333,13 @@ function ProductPage() {
             </aside>
           </div>
         </section>
+        {editingProduct && (
+          <ProductEditor
+            product={editingProduct}
+            onClose={() => setEditingProduct(null)}
+            onSuccess={() => queryClient.invalidateQueries({ queryKey: ["product", slug] })}
+          />
+        )}
       </main>
       <Footer />
     </div>
